@@ -6,7 +6,7 @@ Check saved / dumped ios blobs (.shsh /.shsh2) against Release, Beta and OTA iOS
 Checks if iOS blob files are valid and / or identifies which iOS version blob is valid for.
 
 # How to use
-1. Clone this repo with `git clone --recursive https://github.com/iam-theKid/ios-blob-checker.git && cd ios-blob-checker`
+1. Clone this repo with `git clone --recursive https://github.com/iam-theKid/ios-blob-checker.git && cd ios-blob-checker && chmod +x blobChecker.sh bins/*`
 2. Run `./blobChecker.sh`
 3. Drag and drop blob file into Terminal window;
 4. Type device identifier (ex. iPhone12,3 or iPad7,6 etc)
