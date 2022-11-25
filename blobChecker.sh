@@ -4,7 +4,8 @@
 set -e
 
 osversion=$(sw_vers | grep 'ProductVersion' | cut -d ':' -f2 | cut -d ' ' -f2)
-binsDir="bins"
+binsDir=$(echo $(pwd)\/bins\/)
+chmod -R 755 $binsDir 
 
 if [[ $osversion =~ 10.13.* ]]; then img4toolV="img4tool10.13" ; else img4toolV="img4tool10.15" ; fi
 
@@ -23,7 +24,7 @@ function blobChecker {
                         --------------------------------------------------------------------\n\n"
     echo "\033[32m --- Please drag and drop the SHSH / SHSH2 file that you want to validate into this terminal window and press enter: \033[0m"
     read blobFile
-    echo "\033[32m\n --- Now, let me know the device identifier (ex. iPhone10,4 or iPad7,6): \033[0m" & read deviceid
+    echo "\033[32m\n --- Now, let me know the device identifier (ex. iPhone10,4 or iPad7,6): \033[0m" && read deviceid
     echo "\033[32m\n --- Validate blob against which iOS version(s)? Exact version is not required! (ex: 15, 15.3, 15.3 beta ): \033[0m" && read iosVersion
     echo "\n"
 
