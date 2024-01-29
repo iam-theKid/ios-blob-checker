@@ -4,6 +4,7 @@
 set -e
 
 osversion=$(sw_vers | grep 'ProductVersion' | cut -d ':' -f2 | cut -d ' ' -f2)
+cd "`dirname "$0"`"
 binsDir=$(echo $(pwd)\/bins\/)
 chmod -R 755 $binsDir 
 
@@ -21,7 +22,8 @@ function blobChecker {
                         |______/ \_)___/|____/   \______)_| |_|_____)\____)_| \_)_____)_|    \n"                                                                                  
         
             echo "
-                        --------------------------------------------------------------------\n\n"
+                        --------------------------------------------------------------------\n
+                                                                               by iam-theKid\n"
     echo "\033[32m --- Please drag and drop the SHSH / SHSH2 file that you want to validate into this terminal window and press enter: \033[0m"
     read blobFile
     echo "\033[32m\n --- Now, let me know the device identifier (ex. iPhone10,4 or iPad7,6): \033[0m" && read deviceid
@@ -38,7 +40,14 @@ function blobChecker {
     echo "Building iOS versions list..."
     curl -sL "https://api.ipsw.me/v4/device/$deviceid?type=ipsw" | $binsDir/jq '.firmwares | .[] | select(.version | test("'$iosVersion'")) | .version,.url,.buildid' | cut -d '"' -f2 | while read line ; read line2 ; read line3 ; do echo "$line|$line2|$line3" >> $iosLists.txt ; done
     echo "iOS release versions captured..."
-    curl -sL "https://api.m1sta.xyz/betas/$deviceid" | $binsDir/jq '.[] | select(.version | test("'$iosVersion'")) | .version,.url,.buildid' | cut -d '"' -f2 |  while read line ; read line2 ; read line3 ; do echo "$line|$line2|$line3" >> $iosLists.txt ; done
+    if [[ $deviceid =~ iPhone* ]]; then deviceClass="iPhone"; elif [[ $deviceid =~ iPad* ]]; then deviceClass="iPad"; fi
+    majorversion=$(echo $iosVersion | sed 's/\..*//'); betaUrl="https://theapplewiki.com/wiki/Beta_Firmware/$deviceClass/$majorversion.x"
+    curl -sL "$betaUrl"  | grep -Eo ".*${deviceid}.*" -A 4 | grep 'class="external text" href="' | sed 's/\<td\>\<a rel\=\"nofollow\" class\=\"external text\" href\=\"//' | sed 's/ipsw.*/ipsw/' | \
+        while read line; do \
+            version=$(echo "$line" | sed "s/.*$majorversion/$majorversion/" | sed "s/_.*//"); \
+            bid=$(echo "$line" | sed "s/.*$majorversion/$majorversion/" | sed "s/_Restore.ipsw//" | sed "s/.*_//"); \
+            echo "$version|$line|$bid" >> $iosLists.txt; \
+        done
     echo "iOS beta versions captured..."
     curl -sL "https://api.ipsw.me/v4/device/$deviceid?type=ota" | $binsDir/jq '.firmwares | .[] | select(.version | test("'$iosVersion'")) | .version,.url,.buildid' | cut -d '"' -f2 |  while read line ; read line2 ; read line3 ; do echo "$line|$line2|$line3" | sed 's/9.9.//' >> $iosLists.txt ; done
     echo "iOS ota versions captured..."
