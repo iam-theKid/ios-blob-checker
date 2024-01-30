@@ -2,10 +2,14 @@
 #!/bin/bash
 
 set -e
-
+platform=$(uname)
 osversion=$(sw_vers | grep 'ProductVersion' | cut -d ':' -f2 | cut -d ' ' -f2)
 cd "`dirname "$0"`"
-binsDir=$(echo $(pwd)\/bins\/)
+if [ $platform == 'Darwin' ]; then 
+    binsDir=$(echo $(pwd)\/Darwin\/)
+else 
+     binsDir=$(echo $(pwd)\/Linux\/)
+fi
 chmod -R 755 $binsDir 
 
 if [[ $osversion =~ 10.13.* ]]; then img4toolV="img4tool10.13" ; else img4toolV="img4tool10.15" ; fi
